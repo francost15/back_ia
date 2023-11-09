@@ -1,0 +1,24 @@
+{
+  "name": "Heaven",
+  "version": "1.0.0",
+  "description": "API de antros",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [],
+  "author": "Jairo Santiago Aburto",
+  "license": "ISC",
+  "devDependencies": {
+    "morgan": "^1.10.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0",
+    "multer": "1.4.5-lts.1"
+  }
+}
