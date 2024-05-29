@@ -22,11 +22,6 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.static('public')) //Con esta linea de codigo podemos visualizar imagenes
-app.get('/', (req,res) => {
-    ProductController.find({})
-        .then(products => res.json(products))
-        .catch(err => console.log(err))
-})
 app.use(rutasProducts)
 app.use(routesAuth)
 
