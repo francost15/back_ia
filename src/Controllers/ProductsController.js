@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import * as fs from 'fs' //para manejar todos los archivos
 
 const esquema = new mongoose.Schema({
-    name:String, imagen:String, price:Number
+    products:String, name:String, price:Number, type:String, ml:Number, imagen:String
 },{ versionKey:false })
 
 const ProductsModel = new mongoose.model('products', esquema)
@@ -12,7 +12,7 @@ const ProductsModel = new mongoose.model('products', esquema)
 export const getProducts = async (req,res) => {
     try{
         const {id} = req.params
-        const rows = (id === undefined) ? await ProductsModel.find() : await ProductsModel.findById(id)
+        const rows= (id === undefined) ? await ProductsModel.find() : await ProductsModel.findById(id)
          return res.status(200).json({status:true, data:rows})
     }
 
@@ -25,11 +25,11 @@ export const getProducts = async (req,res) => {
 
 export const saveProducts = async (req, res) => {
     try{
-        const {name, price} = req.body
-        const validation = validate(name, price, req.file, 'Y')
+        const {products, name, price, type, ml} = req.body
+        const validation = validate(products, name, price, type, ml, req.file, 'Y')
         if(validation == ''){
             const newProducts = new ProductsModel({
-                name:name, price:price, imagen:'/uploads/' + req.file.filename
+                products:products, name:name, price:price, type:type, ml:ml, imagen:'/uploads/' + req.file.filename
             })
             return await newProducts.save().then(
                 () => { res.status(200).json({status:true, message:'Producto Guardado'}) }
@@ -45,10 +45,22 @@ export const saveProducts = async (req, res) => {
     }
 }
 
-const validate = (name, imagen, price, validated) => {
+const validate = (products, name, price, type, ml, validated) => {
     var errors = []
+    if(products === undefined || products.trim() === ''){
+        errors.push('El producto ¡No! debe de estar vacio')
+    }
     if(name === undefined || name.trim() === ''){
         errors.push('El nombre ¡No! debe de estar vacio')
+    }
+    if(price === undefined || price.trim() === '' || isNaN(price)){
+        errors.push('El precio ¡No! debe de estar vacio')
+    }
+    if(type === undefined || type.trim() === ''){
+        errors.push('El tipo ¡No! debe de estar vacio')
+    }
+    if(ml === undefined || ml.trim() === '' || isNaN(ml)){
+        errors.push('El tipo ¡No! debe de estar vacio')
     }
     if(validated === 'Y' && imagen === undefined){
         errors.push('Selecciona una imagen en formato jpg, jpeg o png')
@@ -62,20 +74,20 @@ const validate = (name, imagen, price, validated) => {
    return errors
 }
 
-//PUT se utiliza para actualizar datos en un Producto/s
+//PUT se utiliza para actualizar datos en un Productos
 
 export const updateProducts = async (req, res) => {
     try{
         const {id} = req.params
-        const {name, price} = req.body
+        const {products, name, price, type, ml} = req.body
         let imagen = ''
-        let values = {name:name, price:price}
+        let values = {products:products, name:name, price:price, type:type, ml:ml}
         if(req.file != null){
             imagen = '/uploads/' + req.file.filename
-            values = {name:name, price:price, imagen:imagen}
+            values = {products:products, name:name, price:price, type:type, ml:ml, imagen:imagen}
             await deleteImagen(id)
         }
-        const validation = validate(name, price)
+        const validation = validate(products, name, price, type, ml)
         if(validation == ''){
             await ProductsModel.updateOne({_id:id}, {$set: values})
             return  res.status(200).json({status:true, message:'Producto Actualizado'})
