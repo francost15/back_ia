@@ -24,7 +24,7 @@ export const saveProducts = async (req, res) => {
         const validation = validate(nombre,descripcion,precio,cantidad,tipo,marca, req.file, 'Y')
         if(validation == ''){
             const newProducts = new ProductsModel({
-                nombre:nombre, price:price, type:type, ml:ml, imagen:'/uploads/' + req.file.filename
+                nombre:nombre,descripcion:descripcion,precio:precio,cantidad:cantidad,tipo:tipo,marca:marca,imagen:'/uploads/' + req.file.filename
             })
             return await newProducts.save().then(
                 () => { res.status(200).json({status:true, message:'Producto Guardado'}) }
@@ -38,36 +38,32 @@ export const saveProducts = async (req, res) => {
         return res.status(500).json({status:false, errors:[error.message]})
     }
 }
-const validate = (nombre,descripcion,precio,cantidad,tipo, marca,validated) => {
-    var errors = []
-    if(nombre === undefined || name.trim() === ''){
-        errors.push('El nombre ¡No! debe de estar vacio')
+const validate = (nombre, descripcion, precio, cantidad, tipo, marca, reqFile, validated) => {
+    var errors = [];
+    if (nombre === undefined || nombre.trim() === '') {
+        errors.push('El nombre no debe estar vacío');
     }
-    if(descripcion === undefined || descripcion.trim() === ''){
-        errors.push('La descripcion debe de estar vacio')
-        }
-    if(precio === undefined || price.trim() === '' || isNaN(precio)){
-        errors.push('El precio ¡No! debe de estar vacio')
+    if (descripcion === undefined || descripcion.trim() === '') {
+        errors.push('La descripción no debe estar vacía');
     }
-    if(cantidad === undefined || cantidad.trim() === '' || isNaN(cantidad)){
-        errors.push('La cantidad debe de estar vacio')
+    if (precio === undefined || precio.trim() === '' || isNaN(precio)) {
+        errors.push('El precio no debe estar vacío');
     }
-    if(tipo === undefined || tipo.trim() === ''){
-        errors.push('El tipo ¡No! debe de estar vacio')
+    if (cantidad === undefined || cantidad.trim() === '' || isNaN(cantidad)) {
+        errors.push('La cantidad no debe estar vacía');
     }
-    if(marca === undefined || marca.trim() === ''){
-        errors.push('La marca debe de estar vacio')
+    if (tipo === undefined || tipo.trim() === '') {
+        errors.push('El tipo no debe estar vacío');
     }
-    if(validated === 'Y' && imagen === undefined){
-        errors.push('Selecciona una imagen en formato jpg, jpeg o png')
+    if (marca === undefined || marca.trim() === '') {
+        errors.push('La marca no debe estar vacía');
     }
-    else{
-        if(errors != ''){
-            fs.unlinkSync('./public/uploads/' + imagen.filename)
-        }
+    if (validated === 'Y' && reqFile === undefined) {
+        errors.push('Selecciona una imagen en formato jpg, jpeg o png');
     }
-    return errors
-}
+    return errors;
+};
+
 
 //PUT se utiliza para actualizar datos en un Productos
 export const updateProducts = async (req, res) => {
