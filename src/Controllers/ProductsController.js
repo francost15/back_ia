@@ -2,34 +2,29 @@ import mongoose from "mongoose"
 import * as fs from 'fs' //para manejar todos los archivos
 
 const esquema = new mongoose.Schema({
-    products:String, name:String, price:Number, type:String, ml:Number, imagen:String
+    nombre:String, descripcion:String, precio:Number, cantidad:Number,tipo:String,marca:String,imagen:String
 },{ versionKey:false })
-
 const ProductsModel = new mongoose.model('products', esquema)
-
 //GET se utiliza para obtener datos de/los productos
-
 export const getProducts = async (req,res) => {
     try{
         const {id} = req.params
         const rows= (id === undefined) ? await ProductsModel.find() : await ProductsModel.findById(id)
-         return res.status(200).json({status:true, data:rows})
+        return res.status(200).json({status:true, data:rows})
     }
 
     catch(error){
         return res.status(500).json({status:false, errors:[error]})
     }
 }
-
 //POST se utiliza para crear o actualizar datos en un Producto
-
 export const saveProducts = async (req, res) => {
     try{
-        const {products, name, price, type, ml} = req.body
-        const validation = validate(products, name, price, type, ml, req.file, 'Y')
+        const {nombre,descripcion,precio,cantidad,tipo, marca} = req.body
+        const validation = validate(nombre,descripcion,precio,cantidad,tipo,marca, req.file, 'Y')
         if(validation == ''){
             const newProducts = new ProductsModel({
-                products:products, name:name, price:price, type:type, ml:ml, imagen:'/uploads/' + req.file.filename
+                nombre:nombre, price:price, type:type, ml:ml, imagen:'/uploads/' + req.file.filename
             })
             return await newProducts.save().then(
                 () => { res.status(200).json({status:true, message:'Producto Guardado'}) }
@@ -39,55 +34,54 @@ export const saveProducts = async (req, res) => {
             return res.status(400).json({status:false, errors:validation})
         }
     }
-
     catch(error){
         return res.status(500).json({status:false, errors:[error.message]})
     }
 }
-
-const validate = (products, name, price, type, ml, validated) => {
+const validate = (nombre,descripcion,precio,cantidad,tipo, marca,validated) => {
     var errors = []
-    if(products === undefined || products.trim() === ''){
-        errors.push('El producto ¡No! debe de estar vacio')
-    }
-    if(name === undefined || name.trim() === ''){
+    if(nombre === undefined || name.trim() === ''){
         errors.push('El nombre ¡No! debe de estar vacio')
     }
-    if(price === undefined || price.trim() === '' || isNaN(price)){
+    if(descripcion === undefined || descripcion.trim() === ''){
+        errors.push('La descripcion debe de estar vacio')
+        }
+    if(precio === undefined || price.trim() === '' || isNaN(precio)){
         errors.push('El precio ¡No! debe de estar vacio')
     }
-    if(type === undefined || type.trim() === ''){
+    if(cantidad === undefined || cantidad.trim() === '' || isNaN(cantidad)){
+        errors.push('La cantidad debe de estar vacio')
+    }
+    if(tipo === undefined || tipo.trim() === ''){
         errors.push('El tipo ¡No! debe de estar vacio')
     }
-    if(ml === undefined || ml.trim() === '' || isNaN(ml)){
-        errors.push('El tipo ¡No! debe de estar vacio')
+    if(marca === undefined || marca.trim() === ''){
+        errors.push('La marca debe de estar vacio')
     }
     if(validated === 'Y' && imagen === undefined){
         errors.push('Selecciona una imagen en formato jpg, jpeg o png')
     }
-   else{
+    else{
         if(errors != ''){
             fs.unlinkSync('./public/uploads/' + imagen.filename)
         }
-   }
-
-   return errors
+    }
+    return errors
 }
 
 //PUT se utiliza para actualizar datos en un Productos
-
 export const updateProducts = async (req, res) => {
     try{
         const {id} = req.params
-        const {products, name, price, type, ml} = req.body
+        const {nombre,descripcion,precio,cantidad,tipo,marca} = req.body
         let imagen = ''
-        let values = {products:products, name:name, price:price, type:type, ml:ml}
+        let values = {nombre:nombre, descripcion:descripcion,precio:precio,cantidad:cantidad,tipo:tipo,marca:marca}
         if(req.file != null){
             imagen = '/uploads/' + req.file.filename
-            values = {products:products, name:name, price:price, type:type, ml:ml, imagen:imagen}
+            values = {nombre:nombre, descripcion:descripcion,precio:precio,cantidad:cantidad,tipo:tipo,marca:marca, imagen:imagen}
             await deleteImagen(id)
         }
-        const validation = validate(products, name, price, type, ml)
+        const validation = validate(nombre,descripcion,precio,cantidad,tipo,marca)
         if(validation == ''){
             await ProductsModel.updateOne({_id:id}, {$set: values})
             return  res.status(200).json({status:true, message:'Producto Actualizado'})
@@ -103,7 +97,6 @@ export const updateProducts = async (req, res) => {
 }
 
 //DELETE se utiliza para eliminar un Producto/s
-
 export const deleteProducts = async(req, res) => {
     try{
         const {id} = req.params
@@ -117,7 +110,6 @@ export const deleteProducts = async(req, res) => {
 }
 
 //DELETE se utiliza para eliminar un Imagene/s
-
 const deleteImagen = async(id) => {
     const product = await ProductsModel.findById(id)
     const imagen = product.imagen
