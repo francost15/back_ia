@@ -2,15 +2,10 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import mongoose from 'mongoose'
-
-
-import { URL, DB_HOST, DB_DATABASE, DB_PORT } from './config.js'
-// import { DB_HOST, DB_USER, DB_PASS,DB_DATABASE, DB_PORT } from './config.js'
-//
-
 import rutasProducts from './Routes/Products.routes.js'
 import routesAuth from './Routes/Auth.routes.js'
-
+import { URL, DB_HOST, DB_DATABASE, DB_PORT } from './config.js'
+// import { DB_HOST, DB_USER, DB_PASS,DB_DATABASE, DB_PORT } from './config.js'
 //const conexion = 'mongodb://' + DB_HOST + ':' + DB_PORT + '/' + DB_DATABASE
 // const conexion = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
 
