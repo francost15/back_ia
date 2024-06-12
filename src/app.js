@@ -22,7 +22,8 @@ app.use(routesAuth)
 //paraque no aparesca can't get /
 
 app.use( (req,res) => {
-    res.status(404).json({status:false, errors: 'Not FOUND'})
+    res.status(404).json({status:false, errors:error.message})
+    console.log('Recurso no encontrado')
 })
 
 

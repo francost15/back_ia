@@ -75,7 +75,6 @@ export const updateProducts = async (req, res) => {
         if(req.file != null){
             imagen = '/uploads/' + req.file.filename
             values = {nombre:nombre, descripcion:descripcion,precio:precio,cantidad:cantidad,tipo:tipo,marca:marca, imagen:imagen}
-            await deleteImagen(id)
         }
         const validation = validate(nombre,descripcion,precio,cantidad,tipo,marca)
         if(validation == ''){
@@ -105,9 +104,9 @@ export const deleteProducts = async(req, res) => {
     }
 }
 
-//DELETE se utiliza para eliminar un Imagene/s
-const deleteImagen = async(id) => {
-    const product = await ProductsModel.findById(id)
-    const imagen = product.imagen
-    fs.unlinkSync('./public/' + imagen)
-}
+// //DELETE se utiliza para eliminar un Imagene/s
+// const deleteImagen = async(id) => {
+//     const product = await ProductsModel.findById(id)
+//     const imagen = product.imagen
+//     fs.unlinkSync('./public/' + imagen)
+// }
